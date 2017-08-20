@@ -11,3 +11,8 @@
     Примеры:
         [now(used to preface a command or reproof or request)]{114307}"400049102"(LEX=A,SEM=MAN) <unl,2,0>;
         [so(to a very great extent or degree)]{115006}"400146594"(LEX=A,SEM=MAN) <unl,6,0>;
+
+Улучшения для generate.py:
+
+ - Адаптировать имена при создании, чтобы не было проблем с такими:
+        Matarraña/Matarranya
