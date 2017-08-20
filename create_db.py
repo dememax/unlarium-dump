@@ -55,7 +55,7 @@ def process_unl(unl_name):
     unl = open(unl_name, "r")
     n = 0
     g = 0
-    k = ") <unl,"
+    lex_end = ") <unl,"
     for j in unl:
         n += 1
         i = j.strip()
@@ -65,42 +65,42 @@ def process_unl(unl_name):
         if i[-2:] != ">;":
             print("Line", n, "is ignored, bad end:", repr(i))
             continue
-        s5 = i.find('"(LEX', 5)
-        if s5 < 5:
+        i_lex_start = i.find('"(LEX', 5)
+        if i_lex_start < 5:
             print("Line", n, "is ignored, 'LEX' not found:", repr(i))
             continue
-        s6 = i.rfind(k, s5)
-        s7 = i.find(",", s6+len(k))
-        if s6 < s5 or s7 < s6:
-            print("Line", n, "s6", s6, "s7", s7, "is ignored:", repr(i))
+        i_lex_end = i.rfind(lex_end, i_lex_start)
+        i_fre_pri = i.find(",", i_lex_end+len(lex_end))
+        if i_lex_end < i_lex_start or i_fre_pri < i_lex_end:
+            print("Line", n, "i_lex_end", i_lex_end, "i_fre_pri", i_fre_pri, "is ignored:", repr(i))
             continue
-        fre = 0 if s6+len(k) == s7 else int(i[s6+len(k):s7])
-        pri = int(i[s7+1:-2])
-        s4 = i.rfind('}"', 1, s5)
-        if s4 < 1:
-            print("Line", n, "s4", s4, "is ignored:", repr(i))
+        fre = 0 if i_lex_end+len(lex_end) == i_fre_pri else int(i[i_lex_end+len(lex_end):i_fre_pri])
+        pri = int(i[i_fre_pri+1:-2])
+        i_num_id = i.rfind('}"', 1, i_lex_start)
+        if i_num_id < 1:
+            print("Line", n, "i_num_id", i_num_id, "is ignored:", repr(i))
             continue
-        id = int(i[s4+2:s5])
-        s1 = i.find("(", 1, s5)
-        if s1 == -1:
-            s3 = i.find("]{", 1, s4)
-            if s3 < 1:
-                print("Line", n, "s3", s3, "is ignored:", repr(i))
+        id = int(i[i_num_id+2:i_lex_start])
+        i_lru_rel = i.find("(", 1, i_lex_start)
+        if i_lru_rel == -1:
+            i_cls_num = i.find("]{", 1, i_num_id)
+            if i_cls_num < 1:
+                print("Line", n, "i_cls_num", i_cls_num, "is ignored:", repr(i))
                 continue
-            lru = escp_val(i[1:s3])
+            lru = escp_val(i[1:i_cls_num])
             rel = "NULL"
             cls = "NULL"
-            num = int(i[s3+2:s4])
+            num = int(i[i_cls_num+2:i_num_id])
         else:
-            s2 = i.find(">", s1, s4)
-            s3 = i.find(")]{", s2, s4)
-            if s2 < 2 or s3 < 3:
-                print("Line", n, "s2", s2, "s3", s3, "is ignored:", repr(i))
+            i_rel_cls = i.find(">", i_lru_rel, i_num_id)
+            i_cls_num = i.find(")]{", i_rel_cls, i_num_id)
+            if i_rel_cls < 2 or i_cls_num < 3:
+                print("Line", n, "i_rel_cls", i_rel_cls, "i_cls_num", i_cls_num, "i_lru_rel", i_lru_rel, "i_num_id", i_num_id, "i_lex_start", i_lex_start, "is ignored:", repr(i))
                 continue
-            lru = escp_val(i[1:s1])
-            rel = "'" + i[s1+1:s2] + "'"
-            cls = "'" + escp_val(i[s2+1:s3]) + "'"
-            num = int(i[s3+3:s4])
+            lru = escp_val(i[1:i_lru_rel])
+            rel = "'" + i[i_lru_rel+1:i_rel_cls] + "'"
+            cls = "'" + escp_val(i[i_rel_cls+1:i_cls_num]) + "'"
+            num = int(i[i_cls_num+3:i_num_id])
         st = "INSERT INTO unl (lru, rel, cls, num, id, fre, pri) VALUES ('" + lru + "', " + rel + ", " + cls + ", " + str(num) + ", " + str(id) + ", " + str(fre) + ", " + str(pri) + ");"
         try:
             conn.execute(st)

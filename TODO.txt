@@ -1,0 +1,13 @@
+Улучшения для create_db.py:
+
+ - "mod<thing" (relation и classifier) - надо исправить на "aoj>thing":
+    Упоминается в Other/tel-00007517.ppt:
+        adjq  -  Adjectif qualificatif  -  (mod<thing)/(aoj>thing)
+    Примеры:
+        [Soviet Union(mod<thing)]{132503}"303163754"(LEX=J) <unl,0,0>;
+        [former(mod<thing)]{101616}"301047301"(LEX=J,SEM=JJJ,SFR=K0) <unl,2,0>; 
+
+ - LRU без relation и classifier, но в скобках уточняется, что это:
+    Примеры:
+        [now(used to preface a command or reproof or request)]{114307}"400049102"(LEX=A,SEM=MAN) <unl,2,0>;
+        [so(to a very great extent or degree)]{115006}"400146594"(LEX=A,SEM=MAN) <unl,6,0>;
