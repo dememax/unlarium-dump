@@ -1,4 +1,4 @@
-import sqlite3
+import sqlite3, os
 
 conn = None;
 
@@ -7,6 +7,7 @@ def my_commit():
     conn.commit()
     conn.execute("PRAGMA wal_checkpoint;")
     conn.execute("PRAGMA writable_schema=0;")
+    os.sync()
 
 
 def create_db():
@@ -92,14 +93,18 @@ def process_unl(unl_name):
             cls = "NULL"
             num = int(i[i_cls_num+2:i_num_id])
         else:
-            i_rel_cls = i.find(">", i_lru_rel, i_num_id)
-            i_cls_num = i.find(")]{", i_rel_cls, i_num_id)
-            if i_rel_cls < 2 or i_cls_num < 3:
-                print("Line", n, "i_rel_cls", i_rel_cls, "i_cls_num", i_cls_num, "i_lru_rel", i_lru_rel, "i_num_id", i_num_id, "i_lex_start", i_lex_start, "is ignored:", repr(i))
+            i_cls_num = i.find(")]{", i_lru_rel + 2, i_num_id)
+            if  i_cls_num < i_lru_rel + 2:
+                print("Line", n, "i_cls_num", i_cls_num, "i_lru_rel", i_lru_rel, "i_num_id", i_num_id, "i_lex_start", i_lex_start, "is ignored:", repr(i))
                 continue
+            i_rel_cls = i.find(">", i_lru_rel, i_cls_num)
+            if i_rel_cls < i_lru_rel + 1:
+                rel = "'*'"
+                cls = "'" + i[i_lru_rel+1:i_cls_num] + "'"
+            else:
+                rel = "'" + i[i_lru_rel+1:i_rel_cls] + "'"
+                cls = "'" + escp_val(i[i_rel_cls+1:i_cls_num]) + "'"
             lru = escp_val(i[1:i_lru_rel])
-            rel = "'" + i[i_lru_rel+1:i_rel_cls] + "'"
-            cls = "'" + escp_val(i[i_rel_cls+1:i_cls_num]) + "'"
             num = int(i[i_cls_num+3:i_num_id])
         st = "INSERT INTO unl (lru, rel, cls, num, id, fre, pri) VALUES ('" + lru + "', " + rel + ", " + cls + ", " + str(num) + ", " + str(id) + ", " + str(fre) + ", " + str(pri) + ");"
         try:
