@@ -168,7 +168,7 @@ def process_lang(lng, fname):
         s4 = i.rfind(k, s3)
         s5 = i.find(",", s4+len(k))
         if s1 < 1 or s2 < 2 or s3 < 3 or s4 < 5:
-            print("Line", n, ", s1 =", s1, ", s2 =", s2, ", s3 =", s3, "is ignored:", repr(i))
+            print("Line", n, ", s1 =", s1, ", s2 =", s2, ", s3 =", s3, ", s4 =", s4, ", lng =", lng, "is ignored:", repr(i))
             continue
         try:
             lru = escp_val(i[1:s1])
@@ -195,17 +195,17 @@ def process_lang(lng, fname):
 
 if __name__ == '__main__':
     create_db()
-    process_unl("2016-08-12-unl-unabridged.txt")
-    process_unl("2016-08-12-unl-temporary.txt")
-    process_kb("2016-08-18-unl-KB.txt")
-    process_lang("en", "2016-08-12-eng-Common_Words-Unabridged-Generative-UCL/en_gen_u_c_ucl_1.txt")
-    process_lang("en", "2016-08-12-eng-Common_Words-Unabridged-Generative-UCL/en_gen_u_c_ucl_2.txt")
-    process_lang("ru", "2016-08-18-rus-Common_Words-Unabridged-Generative-UCL/ru_gen_u_c_ucl_1.txt")
-    process_lang("fr", "2016-08-18-fra-Common_Words-Unabridged-Generative-UCL/fr_gen_u_c_ucl_1.txt")
-    process_lang("fr", "2016-08-18-fra-Common_Words-Unabridged-Generative-UCL/fr_gen_u_c_ucl_2.txt")
-    process_lang("es", "2016-10-13-spa-Common_Words-Unabridged-Generative-UCL/es_gen_u_c_ucl_1.txt")
-    process_lang("de", "2016-10-13-gen-Common_Words-Unabridged-Generative-UCL/de_gen_u_c_ucl_1.txt")
-    process_lang("ita", "2016-10-13-ita-Common_Words-Unabridged-Generative-UCL/it_gen_u_c_ucl_1.txt")
+    process_unl("unl-unabridged.txt")
+    process_unl("unl-temporary.txt")
+    process_kb("unl-KB.txt")
+    process_lang("en", "eng-Common_Words-Unabridged-Generative-UCL/en_gen_u_c_ucl_1.txt")
+    process_lang("en", "eng-Common_Words-Unabridged-Generative-UCL/en_gen_u_c_ucl_2.txt")
+    process_lang("ru", "rus-Common_Words-Unabridged-Generative-UCL/ru_gen_u_c_ucl_1.txt")
+    process_lang("fr", "fra-Common_Words-Unabridged-Generative-UCL/fr_gen_u_c_ucl_1.txt")
+    process_lang("fr", "fra-Common_Words-Unabridged-Generative-UCL/fr_gen_u_c_ucl_2.txt")
+    process_lang("es", "spa-Common_Words-Unabridged-Generative-UCL/es_gen_u_c_ucl_1.txt")
+    process_lang("de", "gen-Common_Words-Unabridged-Generative-UCL/de_gen_u_c_ucl_1.txt")
+    process_lang("it", "ita-Common_Words-Unabridged-Generative-UCL/it_gen_u_c_ucl_1.txt")
 
     my_commit()
     conn.close()
