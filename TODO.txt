@@ -1,16 +1,54 @@
 Улучшения для create_db.py:
 
- - "mod<thing" (relation и classifier) - надо исправить на "aoj>thing":
-    Упоминается в Other/tel-00007517.ppt:
-        adjq  -  Adjectif qualificatif  -  (mod<thing)/(aoj>thing)
-    Примеры:
-        [Soviet Union(mod<thing)]{132503}"303163754"(LEX=J) <unl,0,0>;
-        [former(mod<thing)]{101616}"301047301"(LEX=J,SEM=JJJ,SFR=K0) <unl,2,0>; 
+ - Разница между  "mod<thing" (relation и classifier)
+            (Упоминается в Other/tel-00007517.ppt:
+                adjq  -  Adjectif qualificatif  -  (mod<thing)/(aoj>thing)
+            Примеры:
+                [Soviet Union(mod<thing)]{132503}"303163754"(LEX=J) <unl,0,0>;
+                [former(mod<thing)]{101616}"301047301"(LEX=J,SEM=JJJ,SFR=K0) <unl,2,0>;)
+    и LRU без relation и classifier (когда в скобках уточняется, что это:
+            Примеры:
+                [now(used to preface a command or reproof or request)]{114307}"400049102"(LEX=A,SEM=MAN) <unl,2,0>;
+                [so(to a very great extent or degree)]{115006}"400146594"(LEX=A,SEM=MAN) <unl,6,0>;)
+    что-то надо с ними дальше делать.
 
- - LRU без relation и classifier, но в скобках уточняется, что это:
-    Примеры:
-        [now(used to preface a command or reproof or request)]{114307}"400049102"(LEX=A,SEM=MAN) <unl,2,0>;
-        [so(to a very great extent or degree)]{115006}"400146594"(LEX=A,SEM=MAN) <unl,6,0>;
+ - Вставлять новые id для несуществующих для UNL KB с записью
+    в relation и classifier значений "+" и "KB"
+
+ - Вставлять новые id для несуществующих для языковых словарей с записью
+    в relation и classifier значений "=" и "lru" (первый всё равно английский)
+
+ - когда используется специальный id. не являющийся числом, например:
+        [each]{432688}"00.@each"(LEMMA=each,BF=each,LEX=R,POS=NPR,LST=WRD,NUM=SNGT,PER=3PP,PAR=M0,FRA=Y0)<en,255,255>
+        [each one]{432756}"00.@each"(LEMMA=each one,BF=each one,LEX=R,POS=NPR,LST=MTW,NUM=SNGT,PER=3PS,PAR=M0,FRA=Y0)<en,255,255>
+        [each other]{432744}"00.@reciprocal"(LEMMA=each other,BF=each other,LEX=R,POS=FPR,LST=MTW,NUM=INV,PER=3PP,PAR=M0,FRA=Y0)<en,255,255>
+        [каждый]{132905}"00.@each"(LEMMA=каждый,BF=каждый,LEX=R,POS=NPR,LST=WRD,PAR=M260,FRA=Y0)<ru,255,255>
+        [ciascuno]{140492}"00.@each"(LEMMA=ciascuno,BF=ciascuno,LEX=R,POS=BLK,LST=WRD,PAR=M0,FRA=Y0)<it,255,255>
+        [ogni]{140491}"00.@each"(LEMMA=ogni,BF=ogni,LEX=R,POS=BLK,LST=WRD,PAR=M0,FRA=Y0)<it,255,255>
+    или
+        [ten]{432898}""10""(LEMMA=ten,BF=ten,LEX=U,POS=CDN,LST=WRD,PAR=M0,FRA=Y0,DIGIT, TEMP)<en,255,255>
+        [tenth]{432855}""10".@ordinal"(LEMMA=tenth,BF=tenth,LEX=U,POS=ORD,LST=WRD,NUM=INV,PAR=M0,FRA=Y0,DIGIT,TEMP)<en,255,0>
+        [Дека-]{133018}""10""(LEMMA=Дека-,BF=Дека-,LEX=U,PAR=M0,FRA=Y0,DIGIT, TEMP)<ru,0,0>
+        [десятеро]{132974}""10""(LEMMA=десятеро,BF=десятеро,LEX=U,LST=WRD,NUM=PLRT,PAR=M0,FRA=Y0,FLX(GNT:="десятерых";DAT:="десятерым";ACC:="десятерых";INS:="десятерыми";PPL:="десятерых";),DIGIT, TEMP)<ru,255,255>
+        [десятка]{132972}""10""(LEMMA=десятка,BF=десятка,LEX=U,LST=WRD,GEN=FEM,NUM=SNG,REG=CLQ,PAR=M0,FRA=Y0,DIGIT, TEMP)<ru,255,255>
+        [десяток]{132971}""10""(LEMMA=десяток,BF=десяток,LEX=U,LST=WRD,GEN=MCL,NUM=SNG,PAR=M0,FRA=Y0,DIGIT, TEMP)<ru,255,255>
+        [десятый]{186554}""10".@ordinal"(LEMMA=десятый,BF=десятый,LEX=U,POS=ADJ,LST=WRD,PAR=M591,FRA=Y0,DIGIT,TEMP)<ru,255,255>
+        [десятый]{186555}""10""(LEMMA=десятый,BF=десятый,LEX=U,POS=ADJ,LST=WRD,PAR=M591,FRA=Y0,DIGIT, TEMP)<ru,255,255>
+        [десять]{132973}""10""(LEMMA=десять,BF=десять,LEX=U,LST=WRD,NUM=SNG,PAR=M0,FRA=Y0,DIGIT, TEMP)<ru,255,255>
+        [Déca]{179801}""10""(LEMMA=Déca,BF=Déca,LEX=U,PAR=M0,FRA=Y0,DIGIT, TEMP)<fr,0,0>
+        [décennie]{179812}""10""(LEMMA=décennie,BF=décennie,LEX=U,DIGIT, TEMP)<fr,255,255>
+        [dix]{268050}""10""(LEMMA=dix,BF=dix,LEX=U,POS=ADJ,LST=WRD,PAR=M0,FRA=Y0,DIGIT, TEMP)<fr,255,255>
+        [dixième]{210092}""10".@ordinal"(LEMMA=dixième,BF=dixième,LEX=U,POS=ADJ,LST=WRD,PAR=M2,FRA=Y0,DIGIT,TEMP)<fr,255,255>
+        [Deca]{151002}""10""(LEMMA=Deca,BF=Deca,LEX=U,PAR=M0,FRA=Y0,DIGIT, TEMP)<es,0,0>
+        [décimo]{206611}""10".@ordinal"(LEMMA=décimo,BF=décimo,LEX=U,POS=ADJ,LST=WRD,PAR=M2,FRA=Y0,DIGIT,TEMP)<es,255,255>
+        [diez]{206565}""10""(LEMMA=diez,BF=diez,LEX=U,POS=ADJ,LST=WRD,PAR=M0,FRA=Y0,DIGIT, TEMP)<es,255,255>
+        [10.]{187462}""10".@ordinal"(LEMMA=10.,BF=10.,LEX=U,POS=ADJ,LST=WRD,PAR=M0,FRA=Y0,DIGIT,TEMP)<de,255,255>
+        [zehn]{187440}""10""(LEMMA=zehn,BF=zehn,LEX=U,POS=ADJ,LST=WRD,PAR=M0,FRA=Y0,DIGIT, TEMP)<de,255,255>
+        [zehnte]{226965}""10".@ordinal"(LEMMA=zehnte,BF=zehnte,LEX=U,POS=ADJ,LST=WRD,DEG=PST,PAR=M220,FRA=Y0,DIGIT,TEMP)<de,255,255>
+        []{140545}""10".@ordinal"(LEMMA=decimo,LEX=U,DIGIT,TEMP)<it,2,0>
+        [Deca]{140537}""10""(LEMMA=Deca,BF=Deca,LEX=U,PAR=M0,FRA=Y0,DIGIT, TEMP)<it,0,0>
+        [dieci]{182051}""10""(LEMMA=dieci,BF=dieci,LEX=U,POS=ADJ,LST=WRD,PAR=M0,FRA=Y0,DIGIT, TEMP)<it,255,255>
+
 
 Улучшения для generate.py:
 
