@@ -1,7 +1,7 @@
 import sqlite3, os
 
-conn = None;
-
+conn = None
+ids = set() # all ids of unl; for quick look up
 
 def my_commit():
     conn.commit()
@@ -20,10 +20,10 @@ def create_db():
                     lru TEXT NOT NULL, -- Lexical Realisation Unit
                     rel TEXT, -- a Universal Relations used to link the LRU to the CLASSIFIER
                     cls TEXT, -- classifier, a category used to disambiguate and classify the LRU
-                    num INTEGER NOT NULL, -- 
+                    num INTEGER, -- 
                     id INTEGER NOT NULL, -- the index of the concept in the knowledge base
-                    fre INTEGER NOT NULL, -- The frequency of NLW in natural texts. 0 (less frequent) to 255 (most frequent)
-                    pri INTEGER NOT NULL, -- The priority of the NLW. Used for natural language generation (UNL-NL). It can range from 0 to 255.
+                    fre INTEGER, -- The frequency of NLW in natural texts. 0 (less frequent) to 255 (most frequent)
+                    pri INTEGER, -- The priority of the NLW. Used for natural language generation (UNL-NL). It can range from 0 to 255.
                     PRIMARY KEY (id),
                     UNIQUE(lru, rel, cls));''')
     conn.execute('''CREATE TABLE IF NOT EXISTS kb ( -- UNL Knowledge Base
@@ -52,6 +52,7 @@ def escp_val(s):
 
 
 def process_unl(unl_name):
+    old_ids = len(ids)
     print("Processing", unl_name)
     unl = open(unl_name, "r")
     n = 0
@@ -109,6 +110,7 @@ def process_unl(unl_name):
         st = "INSERT INTO unl (lru, rel, cls, num, id, fre, pri) VALUES ('" + lru + "', " + rel + ", " + cls + ", " + str(num) + ", " + str(id) + ", " + str(fre) + ", " + str(pri) + ");"
         try:
             conn.execute(st)
+            ids.add(id)
             g += 1
         except sqlite3.OperationalError as e:
             print("Line", n, ", lru = ", lru, ", rel = ", rel, ", cls = ", cls, ", num = ", num, ", id =", id, "failed (" + str(e) + "):", repr(i))
@@ -116,11 +118,22 @@ def process_unl(unl_name):
         except sqlite3.IntegrityError as e:
             print("Line", n, ", lru = ", lru, ", rel = ", rel, ", cls = ", cls, ", num = ", num, ", id =", id, "is ignored (" + str(e) + "):", repr(i))
     unl = None
-    print(unl_name + " - Total lines:", n, "accepted", g, "ignored", n-g)
+    print(unl_name + " - Total lines:", n, "accepted", g, "ignored", n-g, "new ids", len(ids)-old_ids)
     my_commit()
 
+def add_nonexistent(id, lru, rel, cls, linenum, r):
+        st = "INSERT INTO unl (lru, rel, cls, id) VALUES ('" + lru + "', '" + rel + "', '" + cls + "', " + str(id) + ");"
+        try:
+            conn.execute(st)
+            ids.add(id)
+        except sqlite3.OperationalError as e:
+            print("Line", linenum, ", non-existent lru = ", lru, ", rel = ", rel, ", cls = ", cls, ", id =", id, "failed (" + str(e) + "):", repr(r))
+            print(st)
+        except sqlite3.IntegrityError as e:
+            print("Line", linenum, ", non-existent lru = ", lru, ", rel = ", rel, ", cls = ", cls, ", id =", id, "is ignored (" + str(e) + "):", repr(r))
 
 def process_kb(kb_name):
+    old_ids = len(ids)
     print("Processing", kb_name)
     kb = open(kb_name, "r")
     n = 0
@@ -135,7 +148,11 @@ def process_kb(kb_name):
             continue
         rel = i[:s1]
         src = int(i[s1+3:s2])
+        if src not in ids:
+            add_nonexistent(src, str(src), '+', 'KB', n, i)
         tgt = int(i[s2+5:s3])
+        if tgt not in ids:
+            add_nonexistent(tgt, str(tgt), '+', 'KB', n, i)
         try:
             conn.execute("INSERT INTO kb (rel, src, tgt) VALUES ('" +
                     rel + "', " + str(src) + ", " + str(tgt) + ");")
@@ -143,7 +160,7 @@ def process_kb(kb_name):
         except sqlite3.IntegrityError as e:
             print("Line", n, ", rel = ", rel, ", src = ", src, ", tgt =", tgt, "is ignored (" + str(e) + "):", repr(i))
     kb = None
-    print("Total lines:", n, "accepted", g, "ignored", n-g)
+    print("Total lines:", n, "accepted", g, "ignored", n-g, "new ids", len(ids)-old_ids)
     my_commit()
 
 
@@ -179,6 +196,8 @@ def process_lang(lng, fname):
         except ValueError as e:
             print("Line", n, ", s1 =", s1, ", s2 =", s2, ", s3 =", s3, "is ignored (" + str(e) + "):", repr(i))
             continue
+        if id not in ids:
+            add_nonexistent(id, lru, '=', lng, n, i)
         st = "INSERT INTO lng (lang, lru, num, id, fre, pri) VALUES ('" + lng + "', '" + lru + "', " + str(num) + ", " + str(id) + ", " + str(fre) + ", " + str(pri) + ");"
         try:
             conn.execute(st)
